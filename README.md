@@ -1,0 +1,2 @@
+# syncy
+Distributed assets storage
