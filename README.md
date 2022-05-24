@@ -1,2 +1,2 @@
 # syncy
-Distributed assets storage
+Web3 distributed assets storage
