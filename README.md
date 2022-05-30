@@ -1,2 +1,3 @@
-# syncy
-Web3 distributed assets storage
+# Syncy
+
+Efficient decentralized assets storage in WEB#3
