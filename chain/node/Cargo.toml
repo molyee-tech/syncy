@@ -1,13 +1,13 @@
 [package]
-name = "node-template"
-version = "4.0.0-dev"
-description = "A fresh FRAME-based Substrate node, ready for hacking."
-authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
-homepage = "https://substrate.io/"
+name = "syncy-node"
+version = "0.1.0"
+description = "Syncy blockchain node"
+authors = ["Molyee Labs Team <https://github.com/molyee-labs>"]
+homepage = "https://molyee.com/"
 edition = "2021"
-license = "Unlicense"
+license = "LICENCE"
 publish = false
-repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
+repository = "https://github.com/molyee-labs/syncy/"
 build = "build.rs"
 
 [package.metadata.docs.rs]
