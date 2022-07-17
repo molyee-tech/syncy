@@ -1,0 +1,34 @@
+[package]
+authors = ["Molyee-labs team <https://github.com/molyee-labs>"]
+description = "FRAME pallet that wraps Substrate uniques"
+edition = "2018"
+homepage = "https://molyee.org/"
+license = "Apache-2.0"
+name = "pallet-tokens"
+repository = "https://github.com/molyee-labs/syncy"
+version = "3.0.0"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false, features = ["derive"] }
+assets = { path = "../../assets", default-features = false }
+frame-support = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.13", default-features = false }
+frame-system = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.13", default-features = false }
+pallet-assets = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.13", default-features = false }
+pallet-uniques = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.13", default-features = false }
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+sp-core = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.13", default-features = false }
+sp-runtime = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.13", default-features = false }
+
+[features]
+default = ["std"]
+std = [
+    "codec/std",
+    "assets/std",
+    "frame-support/std",
+    "frame-system/std",
+    "pallet-assets/std",
+    "pallet-uniques/std",
+    "scale-info/std",
+    "sp-core/std",
+    "sp-runtime/std",
+]
