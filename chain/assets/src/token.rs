@@ -3,7 +3,6 @@ use sp_runtime::DispatchError;
 
 use crate::{CollectionRecordT, FractionalT, FractionRecordT, NFTImplT, Seal, error::Error};
 
-
 // Fraction ops:
 
 pub fn mint_fraction<Impl: NFTImplT>(

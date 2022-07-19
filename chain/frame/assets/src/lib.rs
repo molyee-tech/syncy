@@ -1,102 +1,361 @@
+// Ensure we're `no_std` when compiling for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/v3/runtime/frame>
+mod impl_asset_system;
+mod impl_fungibles;
+mod impl_nonfungibles;
+
 pub use pallet::*;
-
-#[cfg(test)]
-mod mock;
-
-#[cfg(test)]
-mod tests;
-
-#[cfg(feature = "runtime-benchmarks")]
-mod benchmarking;
+pub use pallet_uniques;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::*;
+    use assets::*;
+    use frame_support::{
+        dispatch::DispatchResult,
+        pallet_prelude::{
+            Member, NMapKey, StorageDoubleMap, StorageMap, StorageNMap, StorageValue, ValueQuery,
+        },
+        traits::IsType,
+        transactional, Blake2_128Concat, Parameter,
+    };
+    use frame_system::{ensure_signed, pallet_prelude::OriginFor};
+    use sp_core::H160;
+    use sp_runtime::traits::{AtLeast32BitUnsigned, Bounded, StaticLookup};
 
-	/// Configure the pallet by specifying the parameters and types on which it depends.
-	#[pallet::config]
-	pub trait Config: frame_system::Config {
-		/// Because this pallet emits events, it depends on the runtime's definition of an event.
-		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-	}
+    #[pallet::config]
+    pub trait Config:
+        frame_system::Config<Hash = Self::NFTItemId>
+        + pallet_assets::Config<AssetId = Self::InternalFTokenId, Balance = Self::NFTFractionAmount>
+        + pallet_uniques::Config<
+            ClassId = Self::InternalCollectionId,
+            InstanceId = Self::NFTCollectionSize,
+        >
+    {
+        /// Because this pallet emits events, it depends on the runtime's definition of an event.
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
-	#[pallet::pallet]
-	#[pallet::generate_store(pub(super) trait Store)]
-	pub struct Pallet<T>(_);
+        // /// Id of the NFT collection.
+        type NFTCollectionId: From<sp_core::H160> + Member + Parameter + Copy + Default;
+        type NFTCollectionSize: Member + Parameter + AtLeast32BitUnsigned + Copy + Default;
+        type NFTItemId: Member + Parameter + Copy + Default;
+        type NFTFractionAmount: Member + Parameter + AtLeast32BitUnsigned + Copy + Default;
 
-	// The pallet's runtime storage items.
-	// https://docs.substrate.io/v3/runtime/storage
-	#[pallet::storage]
-	#[pallet::getter(fn something)]
-	// Learn more about declaring storage items:
-	// https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
+        type InternalCollectionId: Member + Parameter + AtLeast32BitUnsigned + Copy + Default;
+        type InternalFTokenId: Member + Parameter + AtLeast32BitUnsigned + Copy + Default;
 
-	// Pallets use events to inform users when important changes are made.
-	// https://docs.substrate.io/v3/runtime/events-and-errors
-	#[pallet::event]
-	#[pallet::generate_deposit(pub(super) fn deposit_event)]
-	pub enum Event<T: Config> {
-		/// Event documentation should end with an array that provides descriptive names for event
-		/// parameters. [something, who]
-		SomethingStored(u32, T::AccountId),
-	}
+        /// Pallet with low level control over fungible tokens.
+        type Fungibles: FTImplT<
+            FTokenId = Self::InternalFTokenId,
+            Account = Self::AccountId,
+            FTokenAmount = Self::Balance,
+        >;
+    }
 
-	// Errors inform users that something went wrong.
-	#[pallet::error]
-	pub enum Error<T> {
-		/// Error names should be descriptive.
-		NoneValue,
-		/// Errors should have helpful documentation associated with them.
-		StorageOverflow,
-	}
+    /// Records of an  NFT collection by (account & fingerprint).
+    #[pallet::storage]
+    pub type CollectionRepo<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::NFTCollectionId,
+        NFTokenCollectionRecord<
+            T::AccountId,
+            T::NFTCollectionId,
+            T::InternalCollectionId,
+            T::NFTCollectionSize,
+        >,
+    >;
 
-	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
-	// These functions materialize as "extrinsics", which are often compared to transactions.
-	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
-	#[pallet::call]
-	impl<T: Config> Pallet<T> {
-		/// An example dispatchable that takes a singles value as a parameter, writes the value to
-		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
-		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/v3/runtime/origins
-			let who = ensure_signed(origin)?;
+    /// Records of an NFT by fingerprint, account and NFT id.
+    #[pallet::storage]
+    pub type ItemRepo<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::NFTItemId,
+        NFTokenItemRecord<
+            T::AccountId,
+            T::NFTItemId,
+            T::NFTCollectionSize,
+            T::InternalCollectionId,
+            (T::InternalFTokenId, T::NFTFractionAmount),
+        >,
+    >;
 
-			// Update storage.
-			<Something<T>>::put(something);
+    /// Records of a NFT fractions by fingerpring, account and NFT id.
+    #[pallet::storage]
+    pub type FractionRepo<T: Config> = StorageDoubleMap<
+        _,
+        Blake2_128Concat,
+        T::NFTItemId,
+        Blake2_128Concat,
+        T::AccountId,
+        NFTokenFractionRecord<
+            T::AccountId,
+            T::NFTItemId,
+            (T::InternalFTokenId, T::NFTFractionAmount),
+            T::NFTFractionAmount,
+            u32,
+        >,
+    >;
 
-			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
-			// Return a successful DispatchResultWithPostInfo
-			Ok(())
-		}
+    /// Records of fraction asset id and balance by item fingerprint.
+    #[pallet::storage]
+    pub type FractionalRepo<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::NFTItemId, (T::InternalFTokenId, T::NFTFractionAmount)>;
 
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
+    /// @TODO Documentation
+    #[pallet::storage]
+    pub type FractionHolds<T: Config> = StorageNMap<
+        _,
+        (
+            NMapKey<Blake2_128Concat, T::NFTItemId>,
+            NMapKey<Blake2_128Concat, T::AccountId>,
+            NMapKey<Blake2_128Concat, H160>,
+            NMapKey<Blake2_128Concat, u32>,
+        ),
+        (H160, u32),
+    >;
 
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => return Err(Error::<T>::NoneValue.into()),
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(())
-				},
-			}
-		}
-	}
+    /// Id of the next collection to be created.
+    #[pallet::storage]
+    pub type NextCollectionId<T: Config> = StorageValue<_, T::InternalCollectionId, ValueQuery>;
+
+    /// Storage with fraction FT id - item fingerprint mapping.
+    #[pallet::storage]
+    pub type FingerprintByFractionTokenId<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::InternalFTokenId, T::NFTItemId>;
+
+    #[pallet::pallet]
+    #[pallet::generate_store(pub(super) trait Store)]
+    pub struct Pallet<T>(_);
+
+    #[pallet::event]
+    #[pallet::generate_deposit(pub(super) fn deposit_event)]
+    pub enum Event<T: Config> {
+        CollectionCreated {
+            issuer: T::AccountId,
+            collection: T::NFTCollectionId,
+            max_items: T::NFTCollectionSize,
+        },
+        ItemMinted {
+            collection: T::NFTCollectionId,
+            item: T::NFTItemId,
+            owner: T::AccountId,
+        },
+        ItemFractionalized {
+            item: T::NFTItemId,
+            issuer: T::AccountId,
+            total_amount: T::NFTFractionAmount,
+            limited: bool,
+        },
+        ItemTransferred {
+            item: T::NFTItemId,
+            from: T::AccountId,
+            to: T::AccountId,
+        },
+        FractionMinted {
+            item: T::Hash,
+            owner: T::AccountId,
+            amount: T::NFTFractionAmount,
+        },
+        FractionBurned {
+            item: T::Hash,
+            owner: T::AccountId,
+            amount: T::NFTFractionAmount,
+        },
+        FractionTransferred {
+            item: T::NFTItemId,
+            from: T::AccountId,
+            to: T::AccountId,
+            amount: T::NFTFractionAmount,
+        },
+    }
+
+    #[pallet::error]
+    pub enum Error<T> {
+        Other,
+        BadValue,
+        UnknownCollection,
+        UnknownItem,
+        BadTarget,
+        WrongOwner,
+        UnknownFTokenId,
+        Overflow,
+        InsufficientBalance,
+        NoPermission,
+        NotFractionalized,
+    }
+
+    #[pallet::call]
+    impl<T: Config> Pallet<T> {
+        /// Creates new collection. Returns collection id in event.
+        ///
+        /// Parameters
+        /// - `max_items`: Max number of items in the collection.
+        ///
+        /// Emits:
+        ///     [`Event::CollectionCreated`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn create_collection(
+            origin: OriginFor<T>,
+            id: T::NFTCollectionId,
+            max_items: Option<T::NFTCollectionSize>,
+        ) -> DispatchResult {
+            let issuer = ensure_signed(origin.clone())?;
+
+            let max_items = max_items.unwrap_or_else(T::NFTCollectionSize::max_value);
+
+            create_collection::<Self>(&issuer, id, max_items)?;
+
+            Self::deposit_event(Event::CollectionCreated { issuer, collection: id, max_items });
+            Ok(())
+        }
+
+        /// Mints item into collection.
+        ///
+        /// Parameters
+        /// - `collection`: Id of the collection to be minted.
+        /// - `item`: Unique item identifier, eg hash.
+        ///
+        /// Emits:
+        ///     [`Event::ItemMinted`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn mint_item(
+            origin: OriginFor<T>,
+            collection: T::NFTCollectionId,
+            item: T::NFTItemId,
+        ) -> DispatchResult {
+            let owner = ensure_signed(origin)?;
+
+            mint_item(collection, &owner, OpaqueUnique::<Self>(item))?;
+
+            Self::deposit_event(Event::ItemMinted { collection, item, owner });
+            Ok(())
+        }
+
+        /// Transfers item to another account.
+        ///
+        /// Parameters
+        /// - `item`: Unique identifier of the item to be transferred.
+        /// - `to`: Destination account.
+        ///
+        /// Emits:
+        ///     [`Event::ItemTransferred`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn transfer_item(
+            origin: OriginFor<T>,
+            item: T::NFTItemId,
+            to: <T::Lookup as StaticLookup>::Source,
+        ) -> DispatchResult {
+            let from = ensure_signed(origin)?;
+            let to = T::Lookup::lookup(to)?;
+
+            transfer_item::<Self>(item, &from, &to)?;
+
+            Self::deposit_event(Event::ItemTransferred { item, from, to });
+            Ok(())
+        }
+
+        /// Mints additional fungible tokens, fractions for an NFT or coins.
+        /// Fails if issuance of the fractions was limited on fractionalization
+        /// stage.
+        ///
+        /// Parameters
+        /// - `item`: Unique identifier of the fractionalized item.
+        /// - `amount`: Amount of fractions to be minted.
+        ///
+        /// Emits:
+        ///     [`Event::FractionMinted`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn mint_fraction(
+            origin: OriginFor<T>,
+            item: T::Hash,
+            amount: T::NFTFractionAmount,
+        ) -> DispatchResult {
+            let owner = ensure_signed(origin)?;
+
+            mint_fraction::<Self>(item, &owner, amount)?;
+
+            Self::deposit_event(Event::FractionMinted { item, owner, amount });
+            Ok(())
+        }
+
+        /// Burns fractions from item.
+        ///
+        /// Parameters
+        /// - `item`: Unique identifier of the fractionalized item.
+        /// - `amount`: Amount of fractions to be burned.
+        ///
+        /// Emits:
+        ///     [`Event::FractionBurned`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn burn_fraction(
+            origin: OriginFor<T>,
+            item: T::Hash,
+            amount: T::NFTFractionAmount,
+        ) -> DispatchResult {
+            let owner = ensure_signed(origin)?;
+
+            let amount = burn_fraction::<Self>(item, &owner, amount)?;
+
+            Self::deposit_event(Event::FractionBurned { item, owner, amount });
+            Ok(())
+        }
+
+        /// Transfers fraction (fungible token) to another account.
+        ///
+        /// Parameters
+        /// - `item`: Unique id of the fractionalized item.
+        /// - `to`: Destination account.
+        /// - `amount`: Amount of fractions to be transferred.
+        ///
+        /// Emits:
+        ///     [`Event::FractionTransferred`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn transfer_fraction(
+            origin: OriginFor<T>,
+            item: T::NFTItemId,
+            to: <T::Lookup as StaticLookup>::Source,
+            amount: T::NFTFractionAmount,
+        ) -> DispatchResult {
+            let from = ensure_signed(origin)?;
+            let to = T::Lookup::lookup(to)?;
+
+            transfer_fraction::<Self>(item, &from, &to, amount)?;
+
+            Self::deposit_event(Event::FractionTransferred { item, from, to, amount });
+            Ok(())
+        }
+
+        /// Fractionalizes NFT.
+        ///
+        /// Parameters
+        /// - `item`: Unique id of the item to be fractionalized.
+        /// - `total_amount`: Amount of the fractions.
+        /// - `limited`: If set to true, further minting will be locked.
+        ///
+        /// Emits:
+        ///     [`Event::ItemFractionalized`] when successful.
+        #[pallet::weight(1_000_000)]
+        #[transactional]
+        pub fn fractionalize_item(
+            origin: OriginFor<T>,
+            item: T::NFTItemId,
+            total_amount: T::NFTFractionAmount,
+            limited: bool,
+        ) -> DispatchResult {
+            let issuer = ensure_signed(origin)?;
+
+            fractionalize_item::<Self>(item, &issuer, total_amount, limited)?;
+
+            Self::deposit_event(Event::ItemFractionalized { item, issuer, total_amount, limited });
+            Ok(())
+        }
+    }
 }

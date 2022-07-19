@@ -5,6 +5,8 @@ use frame_support::pallet_prelude::*;
 
 use crate::{Seal, error::Error};
 
+pub trait Fungible
+
 pub trait FTImplT:
 {
     type Account: Clone + Parameter;
