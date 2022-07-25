@@ -12,6 +12,7 @@ publish = false
 
 [[bin]]
 name = "syn-hub"
+path = "src/main.rs"
 
 [dependencies]
 fluvio = { git = "https://github.com/molyee-labs/fluvio" }
