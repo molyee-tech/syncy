@@ -1,8 +1,17 @@
 [package]
-name = "cli"
+name = "syncy-cli"
 version = "0.1.0"
+authors = ["Molyee Labs Team <dev@molyee.org"]
+homepage = "https://substrate.io/"
+repository = "https://github.com/molyee-labs/syncy/"
+license = "LICENSE.md"
 edition = "2021"
+publish = false
+
+[[bin]]
+name = "syn"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+clap = "*"
