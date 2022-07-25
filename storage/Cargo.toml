@@ -12,5 +12,6 @@ publish = false
 
 [[bin]]
 name = "syn-storage"
+path = "src/main.rs"
 
 [dependencies]
