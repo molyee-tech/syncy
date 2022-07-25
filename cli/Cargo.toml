@@ -1,8 +1,8 @@
 [package]
 name = "syncy-cli"
 version = "0.1.0"
-authors = ["Molyee Labs Team <dev@molyee.org"]
-homepage = "https://substrate.io/"
+authors = ["Molyee Team <team@molyee.org"]
+homepage = "https://molyee.org/"
 repository = "https://github.com/molyee-labs/syncy/"
 license = "LICENSE.md"
 edition = "2021"
