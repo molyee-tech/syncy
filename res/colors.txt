@@ -1,0 +1,5 @@
+iris #ffffff
+mouth #ffffff
+pupil #483e37
+body #7b68ee
+
