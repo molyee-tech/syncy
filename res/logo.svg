@@ -9,6 +9,9 @@
    id="svg284"
    sodipodi:docname="logo.svg"
    inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   inkscape:export-filename="logo-512x512-dark.png"
+   inkscape:export-xdpi="43.349335"
+   inkscape:export-ydpi="43.349335"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -25,8 +28,8 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.52521147"
-     inkscape:cx="538.83058"
-     inkscape:cy="56.167852"
+     inkscape:cx="408.40692"
+     inkscape:cy="198.96747"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -42,6 +45,22 @@
     <rect
        style="display:inline;fill:#44d4ff;fill-opacity:1;stroke-width:0.396875"
        id="rect204"
+       width="300"
+       height="300"
+       x="-50"
+       y="-50"
+       inkscape:label="rect204" />
+    <rect
+       style="display:inline;fill:#333333;fill-opacity:1;stroke-width:0.396875"
+       id="rect204-7"
+       width="300"
+       height="300"
+       x="-50"
+       y="-50"
+       inkscape:label="rect204" />
+    <rect
+       style="display:inline;fill:#a6c7f6;fill-opacity:1;stroke-width:0.396875"
+       id="rect4493"
        width="300"
        height="300"
        x="-50"
