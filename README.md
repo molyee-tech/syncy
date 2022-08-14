@@ -1,3 +1,3 @@
 # Syncy
 
-Efficient decentralized assets storage in WEB#3
+Efficient and scalable decentralized data storage
