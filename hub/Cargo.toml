@@ -1,10 +1,10 @@
 [package]
 name = "syncy-hub"
-version = "0.1.0"
-authors = ["Molyee Team <team@molyee.org"]
-homepage = "https://molyee.org/"
-repository = "https://github.com/molyee-labs/syncy/"
-license = "LICENSE.md"
+version = "0.0.0"
+description = "Hub node"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy/"
+license = "LICENSE"
 edition = "2021"
 publish = false
 
@@ -15,4 +15,4 @@ name = "syn-hub"
 path = "src/main.rs"
 
 [dependencies]
-fluvio = { git = "https://github.com/molyee-labs/fluvio" }
+fluvio = { git = "https://github.com/molyee-tech/fluvio" }

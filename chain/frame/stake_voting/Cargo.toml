@@ -1,13 +1,13 @@
 [package]
 name = "pallet-stake-voting"
-version = "0.1.0"
-authors = ["Alex Sarapulov <ialexsarapulov@gmail.com>"]
-edition = "2021"
-license = "Apache-2.0"
-homepage = "https://molyee.org/"
-repository = "https://github.com/molyee-labs/syncy/"
 description = "Stake voting pallet"
+version = "0.0.0"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy/"
 readme = "README.md"
+license = "LICENSE"
+edition = "2021"
+publish = false
 
 [dependencies]
 syncy-assets = { path = "../../assets", default-features = false }

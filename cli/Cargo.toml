@@ -1,12 +1,13 @@
 [package]
 name = "syncy-cli"
 version = "0.0.0"
-authors = ["Molyee Team <team@molyee.org"]
-homepage = "https://molyee.org/"
-repository = "https://github.com/molyee-labs/syncy/"
-license = "LICENSE.md"
+description = "CLI tool"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy"
+license = "LICENSE"
 edition = "2021"
 publish = false
+build = "build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -22,7 +23,7 @@ consumer = ["fluvio-cli/consumer"]
 [dependencies]
 clap = { version = "3.1.8", features = ["std", "derive"], default-features = false }
 color-eyre = { version = "0.6.0", default-features = false }
-fluvio-cli = { git = "https://github.com/molyee-labs/fluvio", default-features = false }
+fluvio-cli = { git = "https://github.com/molyee-tech/fluvio", default-features = false }
 
 [dev-dependencies]
 fluvio-future = { version = "0.3.14", features = ["fixture"] }

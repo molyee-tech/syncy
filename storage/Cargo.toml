@@ -1,10 +1,10 @@
 [package]
 name = "syncy-storage"
-version = "0.1.0"
-authors = ["Molyee Team <team@molyee.org"]
-homepage = "https://molyee.org/"
-repository = "https://github.com/molyee-labs/syncy/"
-license = "LICENSE.md"
+version = "0.0.0"
+description = "Storage node"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy/"
+license = "LICENSE"
 edition = "2021"
 publish = false
 

@@ -1,13 +1,13 @@
 [package]
 name = "syncy-runtime"
-version = "0.1.0"
+version = "0.0.0"
 description = "Syncy blockchain runtime"
-authors = ["Molyee Labs Team <https://github.com/molyee-labs>"]
-homepage = "https://molyee.com/"
-edition = "2021"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy"
 license = "LICENSE"
+edition = "2021"
 publish = false
-repository = "https://github.com/molyee-labs/syncy"
+build = "build.rs"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]

@@ -1,13 +1,12 @@
 [package]
 name = "syncy-node"
-version = "0.1.0"
+version = "0.0.0"
 description = "Syncy blockchain node"
-authors = ["Molyee Labs Team <https://github.com/molyee-labs>"]
-homepage = "https://molyee.com/"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy/"
+license = "LICENSE"
 edition = "2021"
-license = "LICENCE"
 publish = false
-repository = "https://github.com/molyee-labs/syncy/"
 build = "build.rs"
 
 [package.metadata.docs.rs]
