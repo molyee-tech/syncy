@@ -1,7 +1,4 @@
-
 use core::hash::Hasher;
-
-pub struct Hash<const N: usize>([u8; N]);
 
 trait Unique<H: Hasher, const N: usize> {
     fn token(&self) -> Hash<N>;
