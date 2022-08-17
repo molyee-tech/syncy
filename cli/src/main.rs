@@ -1,35 +1,36 @@
+mod error;
+mod args;
+mod client;
+mod hub;
+mod storage;
+
+use std::process::ExitCode;
+
+pub use error::{Error, Result};
+
+use args::{Cmd, Opts};
 use clap::Parser;
-use color_eyre::eyre::Result;
-use fluvio_cli::{Root, HelpOpt};
-use fluvio_future::task::run_block_on;
+use colored::*;
 
-fn main() -> Result<()> {
-    fluvio_future::subscriber::init_tracer(None);
-    color_eyre::config::HookBuilder::blank()
-        .display_env_section(false)
-        .install()?;
-    print_help_hack()?;
-    let root: Root = Root::parse();
+#[cfg(feature = "fast-alloc")]
+use mimalloc_rust::GlobalMiMalloc as Alloc;
 
-    // If the CLI comes back with an error, attempt to handle it
-    if let Err(e) = run_block_on(root.process()) {
-        e.print()?;
-        std::process::exit(1);
+#[cfg(feature = "fast-alloc")]
+#[global_allocator]
+static GLOBAL: GlobalAlloc = Alloc;
+
+fn main() -> ExitCode {
+    let opts = Opts::parse();
+    env_logger::init();
+    let res = match opts.command {
+        Cmd::Client(c) => client::handle(c),
+        Cmd::Hub(h) => hub::handle(h),
+        Cmd::Storage(s) => storage::handle(s),
+    };
+    if let Err(e) = res {
+        eprintln!("{}: {}", "Error".bright_red().bold(), &e);
+        ExitCode::FAILURE
+    } else {
+        ExitCode::SUCCESS
     }
-
-    Ok(())
-}
-
-fn print_help_hack() -> Result<()> {
-    let mut args = std::env::args();
-    if args.len() < 2 {
-        HelpOpt {}.process()?;
-        std::process::exit(0);
-    } else if let Some(first_arg) = args.nth(1) {
-        if vec!["-h", "--help", "help"].contains(&first_arg.as_str()) {
-            HelpOpt {}.process()?;
-            std::process::exit(0);
-        }
-    }
-    Ok(())
 }
