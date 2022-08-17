@@ -1,4 +1,5 @@
 use core::hash::Hasher;
+use crate::hash::Hash;
 
 trait Unique<H: Hasher, const N: usize> {
     fn token(&self) -> Hash<N>;
