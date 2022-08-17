@@ -10,6 +10,7 @@ publish = false
 
 [dependencies]
 serde = { version = "1.0.130", features = ["derive"], optional = true }
+thiserror = "1.0.32"
 
 [features]
 default = ["std"]
