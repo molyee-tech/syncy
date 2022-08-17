@@ -1,9 +1,9 @@
 pub struct Id(u128);
 
-pub struct Unique<H: Hash> {
-    hash: H,
+pub struct Unique {
     meta: Url,
     data: Url,
+    hash: Hash<32>,
 }
 
 pub struct Token {
