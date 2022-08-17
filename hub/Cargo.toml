@@ -14,5 +14,14 @@ publish = false
 name = "syn-hub"
 path = "src/main.rs"
 
+[features]
+default = ["consumer", "k8s"]
+k8s = ["fluvio-cli/k8s"]
+consumer = ["fluvio-cli/consumer"]
+
 [dependencies]
-fluvio = { git = "https://github.com/molyee-tech/fluvio" }
+clap = { version = "3.1.8", features = ["std", "derive"], default-features = false }
+color-eyre = { version = "0.6.0", default-features = false }
+fluvio-cli = { git = "https://github.com/molyee-tech/fluvio", default-features = false }
+fluvio-future = { version = "0.3.14", features = ["fixture"] }
+
