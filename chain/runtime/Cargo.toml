@@ -1,5 +1,5 @@
 [package]
-name = "syncy-runtime"
+name = "syn-runtime"
 version = "0.0.0"
 description = "Syncy blockchain runtime"
 authors = ["Molyee Team <https://github.com/molyee-tech>"]

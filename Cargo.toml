@@ -1,8 +1,11 @@
 [workspace]
-
 members = [
     "core",
+    "assets",
     "hub",
     "storage",
     "cli"
+    #"chain/node",
+    #"chain/frame/*",
+    #"chain/runtime",
 ]

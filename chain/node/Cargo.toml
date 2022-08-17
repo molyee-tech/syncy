@@ -1,5 +1,5 @@
 [package]
-name = "syncy-node"
+name = "syn-node"
 version = "0.0.0"
 description = "Syncy blockchain node"
 authors = ["Molyee Team <https://github.com/molyee-tech>"]
@@ -13,7 +13,7 @@ build = "build.rs"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [[bin]]
-name = "node-template"
+name = "syn-node"
 
 [dependencies]
 clap = { version = "3.1.18", features = ["derive"] }
@@ -56,7 +56,7 @@ frame-benchmarking = { version = "4.0.0-dev", git = "https://github.com/parityte
 frame-benchmarking-cli = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.24" }
 
 # Local Dependencies
-node-template-runtime = { version = "4.0.0-dev", path = "../runtime" }
+syn-node = { version = "4.0.0-dev", path = "../runtime" }
 
 # CLI-specific dependencies
 try-runtime-cli = { version = "0.10.0-dev", optional = true, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.24" }
