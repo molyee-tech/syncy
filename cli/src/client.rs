@@ -1,6 +1,6 @@
 use crate::args::ClientOpts;
 use crate::Result;
 
-pub fn handle(opts: ClientOpts) -> Result<()> {
+pub async fn handle(opts: ClientOpts) -> Result<()> {
     Ok(())
 }
