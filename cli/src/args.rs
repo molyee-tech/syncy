@@ -23,7 +23,7 @@ pub enum Cmd {
 
 #[derive(Parser, Debug)]
 pub struct ClientOpts {
-
+    
 }
 
 #[derive(Parser, Debug)]

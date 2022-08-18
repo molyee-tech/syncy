@@ -22,7 +22,7 @@ static GLOBAL: GlobalAlloc = Alloc;
 fn main() -> ExitCode {
     let opts = Opts::parse();
     env_logger::init();
-    if let Err(e) = res {
+    if let Err(e) = process(opts) {
         eprintln!("{}: {}", "Error".bright_red().bold(), &e);
         ExitCode::FAILURE
     } else {
@@ -30,7 +30,7 @@ fn main() -> ExitCode {
     }
 }
 
-async fn process(opts: Opts) -> Result<()> {
+fn process(opts: Opts) -> Result<()> {
     match opts.command {
         Cmd::Client(c) => client::handle(c),
         Cmd::Hub(h) => hub::handle(h),
