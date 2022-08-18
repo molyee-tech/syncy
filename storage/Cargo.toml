@@ -11,7 +11,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "syn-storage"
-path = "src/main.rs"
+name = "syn-s3"
+path = "src/bin/main.rs"
 
 [dependencies]
