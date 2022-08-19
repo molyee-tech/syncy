@@ -5,12 +5,18 @@ mod hub;
 mod network;
 mod storage;
 
-use clap::Parser;
+use clap::{AppSettings, Parser};
 use config::Config;
 use error::Result;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug)]
+#[clap(name = "syn", author, version = formatted_version(), about, long_about=None)]
+#[clap(global_settings(&[
+    AppSettings::ArgsNegateSubcommands,
+    AppSettings::GlobalVersion,
+    AppSettings::DeriveDisplayOrder
+]))]
 pub struct Opts {
     #[clap(flatten)]
     pub root: RootOpts,
@@ -22,7 +28,7 @@ pub struct Opts {
 pub struct RootOpts {
     #[clap(help = "Preconfigured network profile name")]
     pub profile: Option<String>,
-    #[clap(long, short, help = "Path to custom configuration file (overlaps 'profile' option)")]
+    #[clap(value_name = "FILE", long, short, help = "Path to custom configuration file (overlaps 'profile' option)")]
     pub config: Option<PathBuf>
 }
 
@@ -51,4 +57,8 @@ pub fn process(opts: Opts) -> Result<()> {
 fn get_config(root: RootOpts) -> Result<Config> {
     // TODO
     Ok(Config {})
+}
+
+fn formatted_version() -> &'static str {
+    concat!("v", env!("CARGO_PKG_VERSION"), " ", env!("GIT_HASH"))
 }

@@ -1,7 +1,7 @@
 use clap::Parser;
 use colored::*;
 use std::process::ExitCode;
-use syncy::{Opts, process};
+use syncy_cli::{Opts, process};
 
 #[cfg(feature = "fast-alloc")]
 use mimalloc_rust::GlobalMiMalloc as Alloc;
