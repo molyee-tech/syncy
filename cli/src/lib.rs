@@ -22,19 +22,19 @@ pub struct Opts {
 pub struct RootOpts {
     #[clap(help = "Preconfigured network profile name")]
     pub profile: Option<String>,
-    #[clap(help = "Path to custom configuration file (overlaps 'profile' option)")]
+    #[clap(long, short, help = "Path to custom configuration file (overlaps 'profile' option)")]
     pub config: Option<PathBuf>
 }
 
 #[derive(Parser, Debug)]
 pub enum Cmd {
-    #[clap(help = "Commands relative to local client daemon")]
+    #[clap(about = "Manage local client daemon")]
     Client(client::Opts),
-    #[clap(help = "Commands relative to network hub (from profile settings)")]
+    #[clap(about = "Manage network hubs")]
     Hub(hub::Opts),
-    #[clap(alias = "network", help = "Commands relative to network cluster (information from hubs)")]
+    #[clap(alias = "net", about = "Manage network cluster nodes")]
     Network(network::Opts),
-    #[clap(help = "Commands relative to network storage nodes")]
+    #[clap(about = "Manage data storage service")]
     Storage(storage::Opts),
 } 
 

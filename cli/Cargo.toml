@@ -1,7 +1,7 @@
 [package]
-name = "syncy-cli"
+name = "syn-cli"
 version = "0.0.0"
-description = "CLI tool"
+description = "Syncy network management CLI utility"
 authors = ["Molyee Team <https://github.com/molyee-tech>"]
 repository = "https://github.com/molyee-tech/syncy"
 license = "LICENSE"
