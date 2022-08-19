@@ -1,6 +1,12 @@
-use crate::args::StorageOpts;
-use crate::Result;
+use clap::Parser;
+use crate::error::Result;
+use crate::config::Config;
 
-pub fn handle(opts: StorageOpts) -> Result<()> {
-    Ok(())
+#[derive(Parser, Debug)]
+pub struct Opts {
+
+}
+
+pub fn handle(conf: Config, opts: Opts) -> Result<()> {
+    Err("Unimplemented yet".into())
 }
