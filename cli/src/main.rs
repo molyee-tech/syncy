@@ -2,6 +2,7 @@ mod error;
 mod args;
 mod client;
 mod hub;
+mod network;
 mod storage;
 
 use std::process::ExitCode;
@@ -34,6 +35,7 @@ fn process(opts: Opts) -> Result<()> {
     match opts.command {
         Cmd::Client(c) => client::handle(c),
         Cmd::Hub(h) => hub::handle(h),
+        Cmd::Network(h) => network::handle(h),
         Cmd::Storage(s) => storage::handle(s),
     }
 }
