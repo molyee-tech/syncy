@@ -1,5 +1,5 @@
 [package]
-name = "syn-cli"
+name = "syncy"
 version = "0.0.0"
 description = "Syncy network management CLI utility"
 authors = ["Molyee Team <https://github.com/molyee-tech>"]
