@@ -8,7 +8,8 @@ mod storage;
 use clap::{AppSettings, Parser};
 use config::Config;
 use error::Result;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::fs;
 
 #[derive(Parser, Debug)]
 #[clap(name = "syn", author, version = formatted_version(), about, long_about=None)]
@@ -26,10 +27,10 @@ pub struct Opts {
 
 #[derive(Parser, Debug)]
 pub struct RootOpts {
-    #[clap(help = "Preconfigured network profile name")]
+    #[clap(value_name = "NAME", long, short, help = "Preconfigured network profile name")]
     pub profile: Option<String>,
     #[clap(value_name = "FILE", long, short, help = "Path to custom configuration file (overlaps 'profile' option)")]
-    pub config: Option<PathBuf>
+    pub config: Option<PathBuf>,
 }
 
 #[derive(Parser, Debug)]
@@ -55,8 +56,18 @@ pub fn process(opts: Opts) -> Result<()> {
 }
 
 fn get_config(root: RootOpts) -> Result<Config> {
-    // TODO
-    Ok(Config {})
+    let config = if let Some(path) = root.config {
+        //fs::read_to_string(path)?.parse()?
+        todo!()
+    } else if let Some(name) = root.profile {
+        /*let mut s = env::var_os("SYNCY_PROFILES_DIR");
+        s.push_str(&name);
+        fs::read_to_string(Path::new(s))?.parse()?*/
+        todo!()
+    } else {
+        Config::default()
+    };
+    Ok(config)
 }
 
 fn formatted_version() -> &'static str {

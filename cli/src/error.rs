@@ -1,16 +1,22 @@
 use thiserror::Error;
-use core::borrow::Borrow;
 
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("{0}")]
+    Io(#[from] std::io::Error),
+    #[error("{0}")]
     Custom(Box<str>),
 }
 
-impl<S: Borrow<str>> From<S> for Error {
-    fn from(s: S) -> Self {
-        let m = s.borrow().to_owned().into_boxed_str();
-        Error::Custom(m)
+impl From<&str> for Error {
+    fn from(s: &str) -> Self {
+        s.to_owned().into()
+    }
+}
+
+impl From<String> for Error {
+    fn from(s: String) -> Self {
+        Error::Custom(s.into_boxed_str())
     }
 }
 
