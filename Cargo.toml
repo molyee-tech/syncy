@@ -1,9 +1,13 @@
 [workspace]
 members = [
     "core",
-    "mq",
-    "storage",
-    "cli"
+    "net",
+    "cli",
+    "services/storage",
+    "services/auth",
+    "services/user",
+    "services/common",
+
     #"chain/node",
     #"chain/frame/*",
     #"chain/runtime",
