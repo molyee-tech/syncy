@@ -1,7 +1,7 @@
 [package]
-name = "syncy-mq"
+name = "syncy-net"
 version = "0.0.0"
-description = "Message queue util"
+description = "Network messaging subsystem CLI util"
 authors = ["Molyee Team <https://github.com/molyee-tech>"]
 repository = "https://github.com/molyee-tech/syncy/"
 license = "LICENSE"
@@ -12,7 +12,7 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "syn-mq"
+name = "syn-net"
 path = "src/main.rs"
 
 [features]
