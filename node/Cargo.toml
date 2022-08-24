@@ -1,0 +1,14 @@
+[package]
+name = "syncy-node"
+version = "0.0.0"
+description = "Syncy common peer node implementation"
+authors = ["Molyee Team <https://github.com/molyee-tech>"]
+repository = "https://github.com/molyee-tech/syncy"
+license = "LICENSE"
+edition = "2021"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+libp2p = "*"
