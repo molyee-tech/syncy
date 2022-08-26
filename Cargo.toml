@@ -3,6 +3,7 @@ members = [
     "core",
     "net",
     "cli",
+    "node",
     "services/storage",
     "services/auth",
     "services/user",
