@@ -6,4 +6,7 @@ use libp2p::NetworkBehaviour;
 pub struct Behaviour {
     kademlia: Kademlia<MemoryStore>,
     mdns: Mdns,
+    gossipsub: Gossipsub,
+    identify: Identify,
+        ping: ping::Behaviour,
 }
