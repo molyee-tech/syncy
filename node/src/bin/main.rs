@@ -98,12 +98,12 @@ async fn main() -> Result<()> {
             SwarmEvent::NewListenAddr { address, .. } => {
                 println!("Listening in {:?}", address);
             },
-            SwarmEvent::Behaviour(MyBehaviourEvent::Mdns(MdnsEvent::Discovered(list))) => {
+            SwarmEvent::Behaviour(Event::Mdns(MdnsEvent::Discovered(list))) => {
                 for (peer_id, multiaddr) in list {
                     swarm.behaviour_mut().kademlia.add_address(&peer_id, multiaddr);
                 }
             }
-            SwarmEvent::Behaviour(MyBehaviourEvent::Kademlia(KademliaEvent::OutboundQueryCompleted { result, ..})) => {
+            SwarmEvent::Behaviour(Event::Kademlia(KademliaEvent::OutboundQueryCompleted { result, ..})) => {
                 match result {
                     QueryResult::GetProviders(Ok(ok)) => {
                         for peer in ok.providers {
@@ -154,10 +154,10 @@ async fn main() -> Result<()> {
                     _ => {}
                 }
             }
-            SwarmEvent::Behaviour(MyBehaviourEvent::Identify(event)) => {
+            SwarmEvent::Behaviour(Event::Identify(event)) => {
                 println!("identify: {:?}", event);
             }
-            SwarmEvent::Behaviour(MyBehaviourEvent::Gossipsub(GossipsubEvent::Message {
+            SwarmEvent::Behaviour(Event::Gossipsub(GossipsubEvent::Message {
                 propagation_source: peer_id,
                 message_id: id,
                 message,
@@ -169,7 +169,7 @@ async fn main() -> Result<()> {
                     peer_id
                 )
             }
-            SwarmEvent::Behaviour(MyBehaviourEvent::Ping(event)) => {
+            SwarmEvent::Behaviour(Event::Ping(event)) => {
                 match event {
                     ping::Event {
                         peer,
