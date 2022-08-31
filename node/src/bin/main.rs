@@ -75,7 +75,7 @@ async fn main() -> Result<()> {
         behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
         Swarm::new(transport, behaviour, local_peer_id)
     };
-    let addr = "/ip4/0.0.0.0/tcp/3000".parse().expect("can get a local socket");
+    let addr = "/ip4/0.0.0.0/tcp/0".parse().expect("can get a local socket");
     Swarm::listen_on(&mut swarm, addr).expect("swarm can be started");
 
     /*loop {
