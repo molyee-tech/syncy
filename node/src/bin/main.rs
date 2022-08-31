@@ -71,6 +71,7 @@ async fn main() -> Result<()> {
         let identify = Identify::new(IdentifyConfig::new("/ipfs/0.1.0".into(), local_key.into()));
         let ping = ping::Behaviour::new(ping::Config::new());
         let behaviour = Behaviour { kademlia, mdns, gossipsub, identify, ping };
+        println!("Subscribing to {:?}", gossipsub_topic);
         behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
         Swarm::new(transport, behaviour, local_peer_id)
     };
@@ -151,6 +152,59 @@ async fn main() -> Result<()> {
                         eprintln!("Failed to put provider record: {:?}", err);
                     }
                     _ => {}
+                }
+            }
+            SwarmEvent::Behaviour(MyBehaviourEvent::Identify(event)) => {
+                println!("identify: {:?}", event);
+            }
+            SwarmEvent::Behaviour(MyBehaviourEvent::Gossipsub(GossipsubEvent::Message {
+                propagation_source: peer_id,
+                message_id: id,
+                message,
+            })) => {
+                println!(
+                    "Got message: {} with id: {} from peer: {:?}",
+                    String::from_utf8_lossy(&message.data),
+                    id,
+                    peer_id
+                )
+            }
+            SwarmEvent::Behaviour(MyBehaviourEvent::Ping(event)) => {
+                match event {
+                    ping::Event {
+                        peer,
+                        result: Result::Ok(ping::Success::Ping { rtt }),
+                    } => {
+                        println!(
+                            "ping: rtt to {} is {} ms",
+                            peer.to_base58(),
+                            rtt.as_millis()
+                        );
+                    }
+                    ping::Event {
+                        peer,
+                        result: Result::Ok(ping::Success::Pong),
+                    } => {
+                        println!("ping: pong from {}", peer.to_base58());
+                    }
+                    ping::Event {
+                        peer,
+                        result: Result::Err(ping::Failure::Timeout),
+                    } => {
+                        println!("ping: timeout to {}", peer.to_base58());
+                    }
+                    ping::Event {
+                        peer,
+                        result: Result::Err(ping::Failure::Unsupported),
+                    } => {
+                        println!("ping: {} does not support ping protocol", peer.to_base58());
+                    }
+                    ping::Event {
+                        peer,
+                        result: Result::Err(ping::Failure::Other { error }),
+                    } => {
+                        println!("ping: ping::Failure with {}: {}", peer.to_base58(), error);
+                    }
                 }
             }
             _ => {}
