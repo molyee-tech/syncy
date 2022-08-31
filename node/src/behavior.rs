@@ -8,5 +8,6 @@ pub struct Behaviour {
     mdns: Mdns,
     gossipsub: Gossipsub,
     identify: Identify,
-        ping: ping::Behaviour,
+    ping: ping::Behaviour,
 }
+

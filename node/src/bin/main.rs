@@ -35,11 +35,43 @@ async fn main() -> Result<()> {
         .build();*/
     
     let mut swarm = {
+        let gossipsub_config = GossipsubConfigBuilder::default()
+            .max_transmit_size(262144)
+            .build()
+            .expect("valid config");
+        let mut behaviour = MyBehaviour {
+            gossipsub: Gossipsub::new(
+                MessageAuthenticity::Signed(local_key.clone()),
+                gossipsub_config,
+            )
+            .expect("Valid configuration"),
+            identify: Identify::new(IdentifyConfig::new(
+                "/ipfs/0.1.0".into(),
+                local_key.public(),
+            )),
+            ping: ping::Behaviour::new(ping::Config::new()),
+        };
+
+        println!("Subscribing to {:?}", gossipsub_topic);
+        behaviour.gossipsub.subscribe(&gossipsub_topic).unwrap();
+        Swarm::new(transport, behaviour, local_peer_id)
+    };
+
+    let mut swarm = {
         // Create a Kademlia behaviour.
         let store = MemoryStore::new(local_peer_id);
         let kademlia = Kademlia::new(local_peer_id, store);
         let mdns = task::block_on(Mdns::new(MdnsConfig::default()))?;
-        let behaviour = MyBehaviour { kademlia, mdns };
+        let gossip_conf = GossipsubConfigBuilder::default()
+            .max_transmit_size(262144)
+            .build()
+            .expect("valid config");
+        let gossipsub = Gossipsub::new(MessageAuthenticity::Signed(local_key), gossip_conf)
+            .except("valid gossip config");
+        let identify = Identify::new(IdentifyConfig::new("/ipfs/0.1.0".into(), local_key.into()));
+        let ping = ping::Behaviour::new(ping::Config::new());
+        let behaviour = Behaviour { kademlia, mdns, gossipsub, identify, ping };
+        behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
         Swarm::new(transport, behaviour, local_peer_id)
     };
     let addr = "/ip4/0.0.0.0/tcp/3000".parse().expect("can get a local socket");
