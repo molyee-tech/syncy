@@ -78,19 +78,6 @@ async fn main() -> Result<()> {
     let addr = "/ip4/0.0.0.0/tcp/0".parse().expect("can get a local socket");
     Swarm::listen_on(&mut swarm, addr).expect("swarm can be started");
 
-    /*loop {
-        let evt = {
-            tokio::select! {
-                line = stdin.next_line() => Some(EventType::Input(line.expect("can get line").expect("can read line from stdin"))),
-                event = swarm.next() => {
-                    info!("Unhandled Swarm Event: {:?}", event);
-                    None
-                },
-                response = response_rcv.recv() => Some(EventType::Response(response.expect("response exists"))),
-            }
-        };
-    }*/
-
     loop {
         select! {
         line = stdin.select_next_some() => handle_input_line(&mut swarm.behaviour_mut().kademlia, line.expect("Stdin not to close")),
