@@ -28,35 +28,6 @@ async fn main() -> Result<()> {
 
     let mut stdin = io::BufReader::new(tokio::io::stdin()).lines().fuse();
 
-    /*let mut swarm = SwarmBuilder::new(transport, handler, PEER_ID.clone())
-        .executor(Box::new(|fut| {
-            tokio::spawn(fut);
-        }))
-        .build();*/
-    
-    let mut swarm = {
-        let gossipsub_config = GossipsubConfigBuilder::default()
-            .max_transmit_size(262144)
-            .build()
-            .expect("valid config");
-        let mut behaviour = MyBehaviour {
-            gossipsub: Gossipsub::new(
-                MessageAuthenticity::Signed(local_key.clone()),
-                gossipsub_config,
-            )
-            .expect("Valid configuration"),
-            identify: Identify::new(IdentifyConfig::new(
-                "/ipfs/0.1.0".into(),
-                local_key.public(),
-            )),
-            ping: ping::Behaviour::new(ping::Config::new()),
-        };
-
-        println!("Subscribing to {:?}", gossipsub_topic);
-        behaviour.gossipsub.subscribe(&gossipsub_topic).unwrap();
-        Swarm::new(transport, behaviour, local_peer_id)
-    };
-
     let mut swarm = {
         // Create a Kademlia behaviour.
         let store = MemoryStore::new(local_peer_id);
