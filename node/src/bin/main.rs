@@ -30,20 +30,7 @@ async fn main() -> Result<()> {
 
     let mut swarm = {
         // Create a Kademlia behaviour.
-        let store = MemoryStore::new(local_peer_id);
-        let kademlia = Kademlia::new(local_peer_id, store);
-        let mdns = task::block_on(Mdns::new(MdnsConfig::default()))?;
-        let gossip_conf = GossipsubConfigBuilder::default()
-            .max_transmit_size(262144)
-            .build()
-            .expect("valid config");
-        let gossipsub = Gossipsub::new(MessageAuthenticity::Signed(local_key), gossip_conf)
-            .except("valid gossip config");
-        let identify = Identify::new(IdentifyConfig::new("/ipfs/0.1.0".into(), local_key.into()));
-        let ping = ping::Behaviour::new(ping::Config::new());
-        let behaviour = Behaviour { kademlia, mdns, gossipsub, identify, ping };
-        println!("Subscribing to {:?}", gossipsub_topic);
-        behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
+        let behavior = behavior::Builder::new(local_peer_id, local_key).build();
         Swarm::new(transport, behaviour, local_peer_id)
     };
     let addr = "/ip4/0.0.0.0/tcp/0".parse().expect("can get a local socket");
