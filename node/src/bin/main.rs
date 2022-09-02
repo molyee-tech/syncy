@@ -21,11 +21,6 @@ async fn main() -> Result<()> {
         .authenticate(creds)
         .multiplex(mplex)
         .boxed();
-    let mdns = TokioMdns::new().expect("can create mdns");
-    let sub = Floodsub::new(PEER_ID.clone());
-    let mut handler = NetHandler { sub, mdns, tx };
-    handler.sub.subscribe(TOPIC.clone());
-
     let mut stdin = io::BufReader::new(tokio::io::stdin()).lines().fuse();
 
     let mut swarm = {
@@ -233,10 +228,4 @@ fn handle_input_line(kademlia: &mut Kademlia<MemoryStore>, line: String) {
             eprintln!("expected GET, GET_PROVIDERS, PUT or PUT_PROVIDER");
         }
     }
-}
-
-struct NetHandler {
-    sub: Floodsub,
-    mdns: TokioMdns,
-    tx: mpsc::Sender,
 }

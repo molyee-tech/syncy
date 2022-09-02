@@ -22,6 +22,12 @@ impl Builder {
     }
 
     pub fn build(self) -> Behaviour {
+
+        let mdns = TokioMdns::new().expect("can create mdns");
+        let sub = Floodsub::new(PEER_ID.clone());
+        let mut handler = NetHandler { sub, mdns, tx };
+        handler.sub.subscribe(TOPIC.clone());
+
         let store = MemoryStore::new(self.peer);
         let kademlia = Kademlia::new(self.peer, store);
         let mdns = task::block_on(Mdns::new(MdnsConfig::default()))?;
