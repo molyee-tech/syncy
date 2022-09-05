@@ -40,7 +40,7 @@ impl Builder {
         let gossipsub = Gossipsub::new(MessageAuthenticity::Signed(self.key), gossip_conf)
             .except("valid gossip config");
         let identify = Identify::new(IdentifyConfig::new("/ipfs/0.1.0".into(), self.key.into()));
-        let ping = ping::Behaviour::new(ping::Config::new());
+        let ping = Ping::new(PingConfig::new());
         let behaviour = Behaviour { kademlia, mdns, gossipsub, identify, ping };
         println!("Subscribing to {:?}", gossipsub_topic);
         behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
