@@ -1,5 +1,7 @@
 use crate::event::Event;
 use libp2p::NetworkBehaviour;
+use libp2p::indentify::Identify;
+use libp2p::ping::{Ping, PingConfig};
 
 #[derive(NetworkBehaviour)]
 #[behaviour(out_event = "Event")]
@@ -8,7 +10,7 @@ pub struct Behaviour {
     mdns: Mdns,
     gossipsub: Gossipsub,
     identify: Identify,
-    ping: ping::Behaviour,
+    ping: Ping,
 }
 
 pub struct Builder {
