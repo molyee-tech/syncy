@@ -16,6 +16,7 @@ async fn main() -> Result<()> {
     let creds = NoiseConfig::xx(auth_keys).into_authenticated();
     let mplex = mplex::MplexConfig::new();
 
+    // todo build transport from config
     let transport = TokioTcpConfig::new()
         .upgrade(upversion)
         .authenticate(creds)
