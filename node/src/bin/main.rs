@@ -33,7 +33,7 @@ async fn main() -> Result<()> {
 
     loop {
         select! {
-        line = stdin.select_next_some() => handle_input_line(&mut swarm.behaviour_mut().kademlia, line.expect("Stdin not to close")),
+        line = stdin.select_next_some() => swarm.behaviour_mut().handle_input(&line.expect("Stdin not to close")),
         event = swarm.select_next_some() => match event {
             SwarmEvent::NewListenAddr { address, .. } => {
                 println!("Listening in {:?}", address);
@@ -148,84 +148,6 @@ async fn main() -> Result<()> {
                 }
             }
             _ => {}
-        }
-    }
-}
-
-fn handle_input_line(kademlia: &mut Kademlia<MemoryStore>, line: String) {
-    let mut args = line.split(' ');
-
-    match args.next() {
-        Some("GET") => {
-            let key = {
-                match args.next() {
-                    Some(key) => Key::new(&key),
-                    None => {
-                        eprintln!("Expected key");
-                        return;
-                    }
-                }
-            };
-            kademlia.get_record(key, Quorum::One);
-        }
-        Some("GET_PROVIDERS") => {
-            let key = {
-                match args.next() {
-                    Some(key) => Key::new(&key),
-                    None => {
-                        eprintln!("Expected key");
-                        return;
-                    }
-                }
-            };
-            kademlia.get_providers(key);
-        }
-        Some("PUT") => {
-            let key = {
-                match args.next() {
-                    Some(key) => Key::new(&key),
-                    None => {
-                        eprintln!("Expected key");
-                        return;
-                    }
-                }
-            };
-            let value = {
-                match args.next() {
-                    Some(value) => value.as_bytes().to_vec(),
-                    None => {
-                        eprintln!("Expected value");
-                        return;
-                    }
-                }
-            };
-            let record = Record {
-                key,
-                value,
-                publisher: None,
-                expires: None,
-            };
-            kademlia
-                .put_record(record, Quorum::One)
-                .expect("Failed to store record locally.");
-        }
-        Some("PUT_PROVIDER") => {
-            let key = {
-                match args.next() {
-                    Some(key) => Key::new(&key),
-                    None => {
-                        eprintln!("Expected key");
-                        return;
-                    }
-                }
-            };
-
-            kademlia
-                .start_providing(key)
-                .expect("Failed to start providing key");
-        }
-        _ => {
-            eprintln!("expected GET, GET_PROVIDERS, PUT or PUT_PROVIDER");
         }
     }
 }
