@@ -1,8 +1,12 @@
+use libp2p::transport::Boxed;
+use libp2p::identify::Keypair;
+use libp2p::PeerId;
+use libp2p::muxing::StreamMuxerBox;
 
 pub fn build_transport(
-    key_pair: identity::Keypair,
+    key_pair: Keypair,
     psk: Option<PreSharedKey>,
-) -> transport::Boxed<(PeerId, StreamMuxerBox)> {
+) -> Boxed<(PeerId, StreamMuxerBox)> {
     let noise_keys = noise::Keypair::<noise::X25519Spec>::new()
         .into_authentic(&key_pair)
         .unwrap();
@@ -22,4 +26,21 @@ pub fn build_transport(
         .multiplex(yamux_config)
         .timeout(Duration::from_secs(20))
         .boxed()
+    /*
+    let (tx, rx) = mpsc::unbounded_channel();
+    let auth_keys = Keypair::<X25519Spec>::new()
+        .into_authentic(&KEYS)
+        .expect("can create auth keys");
+
+    let upversion = upgrade::Version::V1;
+    let creds = NoiseConfig::xx(auth_keys).into_authenticated();
+    let mplex = mplex::MplexConfig::new();
+
+    // todo build transport from config
+    let transport = TokioTcpConfig::new()
+        .upgrade(upversion)
+        .authenticate(creds)
+        .multiplex(mplex)
+        .boxed();
+     */
 }
