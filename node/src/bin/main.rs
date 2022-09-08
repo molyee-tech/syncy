@@ -11,7 +11,21 @@ async fn main() -> Result<()> {
         .into_authentic(&KEYS)
         .expect("can create auth keys");
 
-    let transport = build_transport(auth_keys);
+    let (tx, rx) = mpsc::unbounded_channel();
+    let auth_keys = Keypair::<X25519Spec>::new()
+        .into_authentic(&KEYS)
+        .expect("can create auth keys");
+
+    let upversion = upgrade::Version::V1;
+    let creds = NoiseConfig::xx(auth_keys).into_authenticated();
+    let mplex = mplex::MplexConfig::new();
+
+    // todo build transport from config
+    let transport = TokioTcpConfig::new()
+        .upgrade(upversion)
+        .authenticate(creds)
+        .multiplex(mplex)
+        .boxed();
 
     let mut stdin = io::BufReader::new(tokio::io::stdin()).lines().fuse();
 
