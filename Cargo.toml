@@ -8,6 +8,7 @@ members = [
     "services/auth",
     "services/user",
     "services/common",
+    "crates/*",
 
     #"chain/node",
     #"chain/frame/*",

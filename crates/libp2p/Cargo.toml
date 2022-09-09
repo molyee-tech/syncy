@@ -1,5 +1,5 @@
 [package]
-name = "libp2p"
+name = "syncy-libp2p"
 version = "0.0.0"
 edition = "2021"
 
