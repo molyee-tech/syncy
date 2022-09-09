@@ -2,6 +2,7 @@ use syncy_node::*;
 use tokio::{mpsc, io, task};
 use libp2p::identity::Keypair;
 use libp2p::{SwarmEvent, SwarmBuilder, Swarm};
+use libp2p::transport::TokioTcpConfig;
 
 #[tokio::main]
 async fn main() -> Result<()> {
