@@ -13,4 +13,8 @@ impl<RT> Node<RT> {
         }
         Ok(())
     }
+
+    pub fn start(self) -> Result<oneshot::Receiver<()>> {
+        todo!()
+    }
 }
