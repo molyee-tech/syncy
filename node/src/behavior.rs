@@ -189,7 +189,7 @@ impl Builder {
                 propagation_source: peer_id,
                 message_id: id,
                 message,
-            })) => {
+            }) => {
                 println!(
                     "Got message: {} with id: {} from peer: {:?}",
                     String::from_utf8_lossy(&message.data),
