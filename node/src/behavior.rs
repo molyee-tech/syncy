@@ -126,12 +126,12 @@ impl Builder {
 
     pub fn handle_event(&mut self, event: Event) {
         match event {
-            Event::Mdns(MdnsEvent::Discovered(list))) => {
+            Event::Mdns(MdnsEvent::Discovered(list)) => {
                 for (peer_id, multiaddr) in list {
                     swarm.behaviour_mut().kademlia.add_address(&peer_id, multiaddr);
                 }
             }
-            Event::Kademlia(KademliaEvent::OutboundQueryCompleted { result, ..})) => {
+            Event::Kademlia(KademliaEvent::OutboundQueryCompleted { result, ..}) => {
                 match result {
                     QueryResult::GetProviders(Ok(ok)) => {
                         for peer in ok.providers {
@@ -182,7 +182,7 @@ impl Builder {
                     _ => {}
                 }
             }
-            Event::Identify(event)) => {
+            Event::Identify(event) => {
                 println!("identify: {:?}", event);
             }
             Event::Gossipsub(GossipsubEvent::Message {
@@ -197,7 +197,7 @@ impl Builder {
                     peer_id
                 )
             }
-            Event::Ping(event)) => {
+            Event::Ping(event) => {
                 match event {
                     ping::Event {
                         peer,
