@@ -24,7 +24,6 @@ impl Builder {
     }
 
     pub fn build(self) -> Behaviour {
-
         let mdns = TokioMdns::new().expect("can create mdns");
         let sub = Floodsub::new(PEER_ID.clone());
         let mut handler = NetHandler { sub, mdns, tx };
