@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "core",
-    "net",
+    "mq",
     "cli",
     "node",
     "services/storage",
