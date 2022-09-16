@@ -1,6 +1,7 @@
 use crate::event::Event;
 use libp2p::NetworkBehaviour;
-use libp2p::indentify::Identify;
+use libp2p::PeerId;
+use libp2p::indentify::{Identify, PublicKey};
 use libp2p::ping::{Ping, PingConfig};
 
 #[derive(NetworkBehaviour)]
