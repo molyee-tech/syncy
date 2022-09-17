@@ -25,6 +25,12 @@ impl Builder {
     }
 
     pub fn build(self) -> Behaviour {
+        self.into()
+    }
+}
+
+impl From<Builder> for Behaviour {
+    fn from(src: Builder) -> Self {
         let mdns = TokioMdns::new().expect("can create mdns");
         let sub = Floodsub::new(PEER_ID.clone());
         let mut handler = NetHandler { sub, mdns, tx };
@@ -44,11 +50,14 @@ impl Builder {
         let behaviour = Behaviour { kademlia, mdns, gossipsub, identify, ping };
         println!("Subscribing to {:?}", gossipsub_topic);
         behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
+        behavior
     }
+}
 
+impl Behaviour {
     pub fn handle_input(&mut self, input: &str) {
         let mut args = line.split(' ');
-        let mut kademlia = self.kademlia;
+        let mut kademlia = &mut self.kademlia;
         match args.next() {
             Some("GET") => {
                 let key = {
