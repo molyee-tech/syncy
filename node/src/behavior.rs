@@ -1,4 +1,5 @@
 use crate::event::Event;
+use crate::error::Result;
 use libp2p::NetworkBehaviour;
 use libp2p::PeerId;
 use libp2p::indentify::{Identify, PublicKey};
@@ -24,13 +25,7 @@ impl Builder {
         Self { peer, key }
     }
 
-    pub fn build(self) -> Behaviour {
-        self.into()
-    }
-}
-
-impl From<Builder> for Behaviour {
-    fn from(src: Builder) -> Self {
+    pub fn build(self) -> Result<Behaviour> {
         let mdns = TokioMdns::new().expect("can create mdns");
         let sub = Floodsub::new(PEER_ID.clone());
         let mut handler = NetHandler { sub, mdns, tx };
@@ -49,8 +44,8 @@ impl From<Builder> for Behaviour {
         let ping = Ping::new(PingConfig::new());
         let behaviour = Behaviour { kademlia, mdns, gossipsub, identify, ping };
         println!("Subscribing to {:?}", gossipsub_topic);
-        behavior.gossipsub.subscribe(&gossipsub_topic).unwrap();
-        behavior
+        behavior.gossipsub.subscribe(&gossipsub_topic)?;
+        Ok(behavior)
     }
 }
 
