@@ -1,3 +1,8 @@
+use libp2p::kademlia::KademliaEvent;
+use libp2p::mdns::MdnsEvent;
+use libp2p::gossip::GossipsubEvent;
+use libp2p::identify::IdentifyEvent;
+use libp2p::ping::PingEvent;
 
 pub enum Event {
     Kademlia(KademliaEvent),
