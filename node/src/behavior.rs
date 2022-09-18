@@ -2,8 +2,9 @@ use crate::event::Event;
 use crate::error::Result;
 use libp2p::NetworkBehaviour;
 use libp2p::PeerId;
-use libp2p::indentify::{Identify, PublicKey};
+use libp2p::identify::{Identify, IdentifyConfig};
 use libp2p::ping::{Ping, PingConfig};
+use libp2p::mdns::TokioMdns;
 
 #[derive(NetworkBehaviour)]
 #[behaviour(out_event = "Event")]
