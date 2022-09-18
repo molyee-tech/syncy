@@ -3,6 +3,7 @@ use crate::error::Result;
 use libp2p::NetworkBehaviour;
 use libp2p::PeerId;
 use libp2p::identify::{Identify, IdentifyConfig};
+use libp2p::identity::PublicKey;
 use libp2p::ping::{Ping, PingConfig};
 use libp2p::mdns::TokioMdns;
 
