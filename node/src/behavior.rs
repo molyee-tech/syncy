@@ -134,7 +134,7 @@ impl Behaviour {
         match event {
             Event::Mdns(MdnsEvent::Discovered(list)) => {
                 for (peer_id, multiaddr) in list {
-                    swarm.behaviour_mut().kademlia.add_address(&peer_id, multiaddr);
+                    self.kademlia.add_address(&peer_id, multiaddr);
                 }
             }
             Event::Kademlia(KademliaEvent::OutboundQueryCompleted { result, ..}) => {
